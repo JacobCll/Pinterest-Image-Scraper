@@ -119,11 +119,11 @@ class PinterestImgScraper:
         with ThreadPoolExecutor(max_workers=num_of_workers) as exe:
             exe.map(self.download, param)
 
-    def scrape(self):
+    def scrape(self, search=None):
         self.jsondata_list = []
         self.unique_images = []
 
-        pinterest_urls, folder_name = self.scrape_pinterest()
+        pinterest_urls, folder_name = self.scrape_pinterest(search)
         print(f"==Scraping {folder_name} on Pinterest==")
 
         self.get_json(pinterest_urls)
