@@ -1,14 +1,13 @@
 from concurrent.futures import ThreadPoolExecutor
-import requests
 from bs4 import BeautifulSoup as soup
-import re
-from pydotmap import DotMap
+from dotmap import DotMap
+from tqdm import tqdm
+import numpy as np
+import requests
 import json
 import cv2
+import re
 import os
-import numpy as np
-from tqdm import tqdm
-
 
 class PinterestImgScraper:
     def __init__(self):
@@ -141,8 +140,7 @@ class PinterestImgScraper:
                 return False
             return True
         return False
-
-       
+        
 if __name__ in "__main__":
     scraper = PinterestImgScraper()
     is_downloaded = scraper.scrape()
