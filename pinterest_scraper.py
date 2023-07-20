@@ -1,7 +1,6 @@
 from concurrent.futures import ThreadPoolExecutor
 from bs4 import BeautifulSoup as soup
 from dotmap import DotMap
-from tqdm import tqdm
 import numpy as np
 import requests
 import json
@@ -15,7 +14,7 @@ class PinterestImgScraper:
         # an array of unique dhashes
         self.unique_images = []
 
-    def scrape_pinterest(self, search=None):
+    def scrape_pinterest(self, search: str=None):
         pinterest_urls = []
 
         try: 
@@ -87,7 +86,7 @@ class PinterestImgScraper:
         if not os.path.exists(os.path.join(os.getcwd(), folder_name)):
             os.mkdir(os.path.join(os.getcwd(), folder_name))
 
-        for url in tqdm(img_urls):
+        for url in img_urls:
             # get byte data of the image
             result = requests.get(url, stream=True).content
             # initialize file path for image
@@ -119,7 +118,7 @@ class PinterestImgScraper:
         with ThreadPoolExecutor(max_workers=num_of_workers) as exe:
             exe.map(self.download, param)
 
-    def scrape(self, search=None):
+    def scrape(self, search: str=None):
         self.jsondata_list = []
         self.unique_images = []
 
@@ -143,9 +142,9 @@ class PinterestImgScraper:
         
 if __name__ in "__main__":
     scraper = PinterestImgScraper()
-    is_downloaded = scraper.scrape()
+    is_downloaded = scraper.scrape(search=None)
 
     if is_downloaded:
-        print("\n==Downloading completed==")
+        print("\n==Download completed==")
     else:
         print("\n==Nothing to download==")
