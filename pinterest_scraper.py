@@ -8,7 +8,7 @@ import cv2
 import re
 import os
 
-class PinterestImgScraper:
+class PinterestScraper:
     def __init__(self):
         self.jsondata_list = []
         # an array of unique dhashes
@@ -82,16 +82,14 @@ class PinterestImgScraper:
     
 
     def download(self, tup):
-        img_urls, folder_name = tup
-        if not os.path.exists(os.path.join(os.getcwd(), folder_name)):
-            os.mkdir(os.path.join(os.getcwd(), folder_name))
+        img_urls, output_path = tup
 
         for url in img_urls:
-            # get byte data of the image
+            # get byte data of the image    
             result = requests.get(url, stream=True).content
             # initialize file path for image
             file_name = url.split("/")[-1]
-            file_path = os.path.join(os.getcwd(), folder_name, file_name)
+            file_path = os.path.join(output_path, file_name)
             # convert the bytearray to an np array 
             # dtype represents unsigned 8-bit integers (0-255)
             # imgarr contains the binary image data 
@@ -106,19 +104,18 @@ class PinterestImgScraper:
 
             self.unique_images.append(self.dhash(image))
 
-    def mult_dl(self, url_list, keyword):
-        folder_name = keyword
+    def mult_dl(self, url_list, output_path):
         num_of_workers = 10
         idx = len(url_list) // num_of_workers if len(url_list) > 9 else len(url_list)
 
         param = []
         for i in range(num_of_workers):
-            param.append((url_list[((i*idx)):(idx*(i+1))], folder_name))
+            param.append((url_list[((i*idx)):(idx*(i+1))], output_path))
 
         with ThreadPoolExecutor(max_workers=num_of_workers) as exe:
             exe.map(self.download, param)
 
-    def scrape(self, search: str=None):
+    def scrape(self, search: str=None, output_p: str=""):
         self.jsondata_list = []
         self.unique_images = []
 
@@ -128,21 +125,30 @@ class PinterestImgScraper:
         self.get_json(pinterest_urls)
 
         image_urls = self.get_img()
-        
-        print()
-        print(f"=={len(image_urls)} files will be downloaded==")
+
+        default_path = os.path.join(os.getcwd(), folder_name)
+
+        if os.path.exists(output_p):
+            output_path = output_p
+        elif os.path.exists(default_path):
+            output_path = default_path
+        else:
+            os.mkdir(default_path)
+            output_path = default_path
+            
+        print(f"\n=={len(image_urls)} files will be downloaded at {output_path}==")
         
         if len(image_urls):
             try:
-                self.mult_dl(image_urls, folder_name)
+                self.mult_dl(image_urls, output_path)
             except KeyboardInterrupt:
                 return False
             return True
         return False
         
 if __name__ in "__main__":
-    scraper = PinterestImgScraper()
-    is_downloaded = scraper.scrape(search=None)
+    scraper = PinterestScraper()
+    is_downloaded = scraper.scrape(search=None, output_path="")
 
     if is_downloaded:
         print("\n==Download completed==")

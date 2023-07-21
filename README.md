@@ -1,2 +1,23 @@
 # Pinterest-Image-Scraper
-Pinterest image scraper
+
+Python program to scrape images from Pinterest
+
+### Install libraries required:
+
+```bash
+pip install -r requirements.txt
+```
+
+### Usage:
+
+```bash
+python pinterest_scraper.py
+```
+
+### or
+
+```bash
+from pinterest_scraper import PinterestScraper
+scraper = PinterestScraper()
+scraper.scrape("Input", "output_path_folder")
+```
