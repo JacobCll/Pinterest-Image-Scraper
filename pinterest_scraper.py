@@ -8,17 +8,17 @@ import cv2
 import re
 import os
 
+class MissingArgumentException(Exception):
+    pass
+
 class PinterestScraper:
     def __init__(self):
         self.jsondata_list = []
-        # an array of unique dhashes
-        self.unique_images = []
+        self.unique_images = [] # an array of unique dhashes
 
-    def scrape_pinterest(self, search: str=None):
+    def scrape_pinterest(self, search: str):
         pinterest_urls = []
-
-        try: 
-            search = input("Search Pinterest for: ") if search == None else search
+        try:         
             url = f'http://www.google.co.in/search?hl=en&q={search} pinterest'
             url = url.replace("+", "%2B").replace(" ", "%20")
 
@@ -116,31 +116,37 @@ class PinterestScraper:
             exe.map(self.download, param)
 
     def scrape(self, search: str=None, output_p: str=""):
+        if __name__ == "__main__":
+            search = input("Search Pinterest for: ")
+            output_p = input("Path to Folder: ")
+        else:
+            if search is None or output_p == "":
+                raise MissingArgumentException("Search term and/or output path argument/s missing.")
+            
+        if not os.path.exists(output_p):
+            print(f"(-) Directory: {output_p} does not exist.")
+            return False
+        
+        if not search:
+            print("(-) Invalid search.")
+            return False
+        
         self.jsondata_list = []
         self.unique_images = []
+        
+        pinterest_urls, folder_name= self.scrape_pinterest(search)
 
-        pinterest_urls, folder_name = self.scrape_pinterest(search)
-        print(f"==Scraping {folder_name} on Pinterest==")
+        print(f"(+) Scraping {folder_name} on Pinterest")
 
         self.get_json(pinterest_urls)
 
         image_urls = self.get_img()
 
-        default_path = os.path.join(os.getcwd(), folder_name)
-
-        if os.path.exists(output_p):
-            output_path = output_p
-        elif os.path.exists(default_path):
-            output_path = default_path
-        else:
-            os.mkdir(default_path)
-            output_path = default_path
-            
-        print(f"\n=={len(image_urls)} files will be downloaded at {output_path}==")
+        print(f"(+) {len(image_urls)} files will be downloaded at {output_p}")
         
         if len(image_urls):
             try:
-                self.mult_dl(image_urls, output_path)
+                self.mult_dl(image_urls, output_p)
             except KeyboardInterrupt:
                 return False
             return True
@@ -148,9 +154,13 @@ class PinterestScraper:
         
 if __name__ in "__main__":
     scraper = PinterestScraper()
-    is_downloaded = scraper.scrape(search=None, output_path="")
+
+    try:
+        is_downloaded = scraper.scrape(search=None, output_p="")
+    except:
+        is_downloaded = False
 
     if is_downloaded:
-        print("\n==Download completed==")
+        print("(+) Download completed.")
     else:
-        print("\n==Nothing to download==")
+        print("(-) Nothing to download.")
