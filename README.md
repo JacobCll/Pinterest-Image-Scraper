@@ -1,6 +1,6 @@
 # Pinterest-Image-Scraper
 
-Python program to scrape images from Pinterest
+Python program to scrape and download images from Pinterest
 
 ### Install libraries required:
 
