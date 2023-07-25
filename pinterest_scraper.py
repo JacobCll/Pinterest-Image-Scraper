@@ -117,8 +117,8 @@ class PinterestScraper:
 
     def scrape(self, search: str=None, output_p: str=""):
         if __name__ == "__main__":
-            search = input("Search Pinterest for: ")
-            output_p = input("Path to Folder: ")
+            search = input("(+) Search Pinterest for: ")
+            output_p = input("(+) Path to Folder: ")
         else:
             if search is None or output_p == "":
                 raise MissingArgumentException("Search term and/or output path argument/s missing.")
